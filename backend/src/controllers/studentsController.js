@@ -72,6 +72,11 @@ exports.createStudent = async (req, res) => {
       return res.status(400).json({ error: 'All fields required' });
     }
 
+    // Validate SCS number: must be numeric and minimum 4 digits
+    if (!/^\d{4,}$/.test(scs_no)) {
+      return res.status(400).json({ error: 'SCS number must be at least 4 digits (numeric only)' });
+    }
+
     if (!['Spartans', 'Vikings', 'Knights', 'Samurais'].includes(house)) {
       return res.status(400).json({ error: 'Invalid house' });
     }

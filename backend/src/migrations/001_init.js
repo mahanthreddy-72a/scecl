@@ -6,7 +6,7 @@ const migration = {
       await client.query(`
         CREATE TABLE IF NOT EXISTS students (
           id SERIAL PRIMARY KEY,
-          scs_no VARCHAR(50) UNIQUE NOT NULL,
+          scs_no VARCHAR(255) UNIQUE NOT NULL CHECK(scs_no ~ '^[0-9]{4,}$'),
           name VARCHAR(255) NOT NULL,
           class VARCHAR(50) NOT NULL,
           house VARCHAR(50) NOT NULL CHECK(house IN ('Spartans', 'Vikings', 'Knights', 'Samurais')),
