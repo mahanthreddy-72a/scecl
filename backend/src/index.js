@@ -1,10 +1,10 @@
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
-const SQLiteStore = require('connect-sqlite3')(session);
+const pgSession = require('connect-pg-simple')(session);
 const rateLimit = require('express-rate-limit');
 const path = require('path');
-const db = require('./db');
+const pool = require('./db');
 const errorHandler = require('./middleware/errorHandler');
 
 // Routes
@@ -23,18 +23,21 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 // CORS
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5173'],
+  origin: [process.env.CORS_ORIGIN || 'http://localhost:3000', 'http://localhost:5173'],
   credentials: true
 }));
 
 // Session management
 app.use(session({
-  store: new SQLiteStore({ db: path.join(__dirname, '../database/sessions.db') }),
+  store: new pgSession({
+    pool: pool,
+    tableName: 'session'
+  }),
   secret: process.env.SESSION_SECRET || 'your-secret-key-change-in-production',
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: false, // Set to true if using HTTPS
+    secure: process.env.NODE_ENV === 'production', // Set to true if using HTTPS
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
@@ -68,11 +71,13 @@ app.use(errorHandler);
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`✓ Server running on http://localhost:${PORT}`);
+  console.log(`✓ Database: ${process.env.DB_NAME || 'elections'}`);
 });
 
 // Graceful shutdown
-process.on('SIGINT', () => {
-  db.close();
+process.on('SIGINT', async () => {
+  console.log('Shutting down gracefully...');
+  await pool.end();
   process.exit(0);
 });

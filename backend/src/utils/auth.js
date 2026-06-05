@@ -1,20 +1,23 @@
 const bcrypt = require('bcrypt');
-const db = require('../db');
+const pool = require('../db');
 
 const verifyPassword = (password, hash) => bcrypt.compareSync(password, hash);
 
 const hashPassword = async (password) => bcrypt.hash(password, 10);
 
-const findAdminByUsername = (username) => {
-  return db.prepare('SELECT * FROM admins WHERE username = ?').get(username);
+const findAdminByUsername = async (username) => {
+  const result = await pool.query('SELECT * FROM admins WHERE username = $1', [username]);
+  return result.rows[0];
 };
 
-const findStudentBySCSNumber = (scsNo) => {
-  return db.prepare('SELECT * FROM students WHERE scs_no = ?').get(scsNo);
+const findStudentBySCSNumber = async (scsNo) => {
+  const result = await pool.query('SELECT * FROM students WHERE scs_no = $1', [scsNo]);
+  return result.rows[0];
 };
 
-const getStudentById = (id) => {
-  return db.prepare('SELECT * FROM students WHERE id = ?').get(id);
+const getStudentById = async (id) => {
+  const result = await pool.query('SELECT * FROM students WHERE id = $1', [id]);
+  return result.rows[0];
 };
 
 module.exports = {

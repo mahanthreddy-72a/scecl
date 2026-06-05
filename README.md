@@ -27,13 +27,14 @@ A complete full-stack election management system designed for school student cou
 ### Backend
 - Node.js
 - Express.js
-- SQLite 3 (better-sqlite3)
+- PostgreSQL 12+ (with pg library)
 - Bcrypt (password hashing)
 - Multer (file uploads)
 
 ### Database
-- SQLite with WAL mode for concurrency
+- PostgreSQL with connection pooling
 - Comprehensive schema with audit logging
+- Session storage in PostgreSQL
 
 ## Project Structure
 
@@ -71,26 +72,51 @@ elections/
 ### Prerequisites
 - Node.js 16+
 - npm or yarn
+- PostgreSQL 12+ ([Setup Guide](docs/POSTGRESQL_SETUP.md))
 
 ### Backend Setup
 
-1. Install dependencies:
+1. **Set up PostgreSQL** (see [PostgreSQL Setup Guide](docs/POSTGRESQL_SETUP.md)):
+```bash
+# macOS
+brew install postgresql@15
+brew services start postgresql@15
+
+# Linux
+sudo apt-get install postgresql
+sudo systemctl start postgresql
+
+# Windows - Use installer from https://www.postgresql.org/
+```
+
+2. **Create database and user**:
+```bash
+psql -U postgres -c "CREATE DATABASE elections;"
+```
+
+3. **Configure environment**:
 ```bash
 cd backend
+cp .env.example .env
+# Edit .env with your PostgreSQL credentials
+```
+
+4. **Install dependencies**:
+```bash
 npm install
 ```
 
-2. Initialize the database:
+5. **Initialize the database**:
 ```bash
 npm run db:migrate
 ```
 
-3. Seed test data (optional):
+6. **Seed test data** (optional):
 ```bash
 npm run db:seed
 ```
 
-4. Start the server:
+7. **Start the server**:
 ```bash
 npm run dev
 ```
@@ -301,13 +327,8 @@ lsof -ti:5000 | xargs kill -9
 lsof -ti:3000 | xargs kill -9
 ```
 
-### Database Locked
-SQLite uses WAL mode. If locked:
-```bash
-# Delete WAL files
-rm database/elections.db-wal
-rm database/elections.db-shm
-```
+### Database Connection Issues
+See [PostgreSQL Setup Guide](docs/POSTGRESQL_SETUP.md#troubleshooting) for detailed troubleshooting steps.
 
 ### Session Issues
 Clear browser cookies and localStorage, then refresh
@@ -330,10 +351,12 @@ npm install --save-dev jest @testing-library/react
 
 ## Performance Notes
 
-- SQLite with WAL mode handles ~1000+ concurrent users
-- Voting is atomic transaction (all-or-nothing)
-- Indexes on frequently queried columns
-- Session storage in SQLite for persistence
+- **PostgreSQL** with connection pooling handles 1000+ concurrent users
+- **Vote integrity**: Atomic transactions with ROLLBACK on failure
+- **Indexes**: Created on `scs_no`, `has_voted`, `position`, `house`, `created_at`
+- **Session management**: PostgreSQL-backed persistent session storage
+- **Connection pooling**: 20 max connections, auto-reused for efficiency
+- **Scaling**: Ready for production load with proper PostgreSQL configuration
 
 ## Support
 

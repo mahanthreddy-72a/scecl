@@ -1,11 +1,27 @@
-const Database = require('better-sqlite3');
-const path = require('path');
+const { Pool } = require('pg');
 
-const dbPath = path.join(__dirname, '../../database/elections.db');
-const db = new Database(dbPath);
+const pool = new Pool({
+  host: process.env.DB_HOST || 'localhost',
+  port: process.env.DB_PORT || 5432,
+  database: process.env.DB_NAME || 'elections',
+  user: process.env.DB_USER || 'postgres',
+  password: process.env.DB_PASSWORD || 'postgres',
+  max: 20,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
+});
 
-// Enable WAL mode for better concurrency
-db.pragma('journal_mode = WAL');
-db.pragma('foreign_keys = ON');
+pool.on('error', (err) => {
+  console.error('Unexpected error on idle client', err);
+});
 
-module.exports = db;
+// Test connection
+pool.query('SELECT NOW()', (err, res) => {
+  if (err) {
+    console.error('Database connection error:', err);
+  } else {
+    console.log('✓ Connected to PostgreSQL database');
+  }
+});
+
+module.exports = pool;
