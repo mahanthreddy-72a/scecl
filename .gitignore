@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+dist/
+build/
+
+# Database
+database/*.db
+database/*.db-wal
+database/*.db-shm
+database/*.db-journal
+
+# Session store
+backend/sessions.db
+backend/sessions.db-wal
+backend/sessions.db-shm
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-*
+.DS_Store
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Uploads (gitignore specific files)
+uploads/candidates/*.jpg
+uploads/candidates/*.jpeg
+uploads/candidates/*.png
+uploads/candidates/*.gif
+!uploads/.gitkeep
+!uploads/candidates/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
