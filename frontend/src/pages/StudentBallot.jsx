@@ -323,15 +323,15 @@ export default function StudentBallot() {
                     <div className="w-full mb-4 relative">
                       {candidate.image_path ? (
                         <img
-                          src={`http://localhost:5000${candidate.image_path}`}
+                          src={candidate.image_path}
                           alt={candidate.name}
                           className="w-full h-40 object-cover rounded-lg shadow-md"
                           onError={(e) => {
-                            console.error('Image failed to load:', `http://localhost:5000${candidate.image_path}`);
+                            console.error('Image failed to load:', candidate.image_path);
                             e.target.style.display = 'none';
                           }}
                           onLoad={() => {
-                            console.log('Image loaded:', `http://localhost:5000${candidate.image_path}`);
+                            console.log('Image loaded:', candidate.image_path);
                           }}
                         />
                       ) : (
@@ -447,15 +447,15 @@ export default function StudentBallot() {
                             <div className="w-full mb-4 relative">
                               {candidate.image_path ? (
                                 <img
-                                  src={`http://localhost:5000${candidate.image_path}`}
+                                  src={candidate.image_path}
                                   alt={candidate.name}
                                   className="w-full h-40 object-cover rounded-lg shadow-md"
                                   onError={(e) => {
-                                    console.error('Image failed to load:', `http://localhost:5000${candidate.image_path}`);
+                                    console.error('Image failed to load:', candidate.image_path);
                                     e.target.style.display = 'none';
                                   }}
                                   onLoad={() => {
-                                    console.log('Image loaded:', `http://localhost:5000${candidate.image_path}`);
+                                    console.log('Image loaded:', candidate.image_path);
                                   }}
                                 />
                               ) : (
