@@ -49,20 +49,25 @@ exports.studentLogin = async (req, res) => {
       return res.status(400).json({ error: 'SCS number required' });
     }
 
+    // Check if it's a teacher/staff ID (0000 or SCS0000)
+    const isTeacher = scs_no === '0000' || scs_no === 'SCS0000';
+
     const student = await findStudentBySCSNumber(scs_no);
 
     if (!student) {
       return res.status(404).json({ error: 'Student not found' });
     }
 
-    if (student.has_voted) {
+    // Skip has_voted check for teachers
+    if (!isTeacher && student.has_voted) {
       return res.status(403).json({ error: 'You have already voted' });
     }
 
     req.session.studentId = student.id;
+    req.session.isTeacher = isTeacher;
 
     await pool.query('UPDATE students SET last_login = NOW() WHERE id = $1', [student.id]);
-    await log('student_login', 'student', student.id, { scs_no });
+    await log('student_login', 'student', student.id, { scs_no, isTeacher });
 
     res.json({
       success: true,
@@ -71,7 +76,8 @@ exports.studentLogin = async (req, res) => {
         name: student.name,
         scs_no: student.scs_no,
         class: student.class,
-        house: student.house
+        house: student.house,
+        isTeacher
       }
     });
   } catch (error) {
@@ -117,6 +123,7 @@ exports.getStudentStatus = async (req, res) => {
       return res.status(401).json({ error: 'Not authenticated' });
     }
 
+    const isTeacher = req.session.isTeacher || false;
     const student = await getStudentById(req.session.studentId);
 
     res.json({
@@ -126,7 +133,8 @@ exports.getStudentStatus = async (req, res) => {
         scs_no: student.scs_no,
         class: student.class,
         house: student.house,
-        has_voted: student.has_voted
+        has_voted: student.has_voted,
+        isTeacher
       }
     });
   } catch (error) {

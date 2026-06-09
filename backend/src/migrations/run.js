@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const pool = require('../db');
 const migration001 = require('./001_init');
 

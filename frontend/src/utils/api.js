@@ -7,8 +7,28 @@ const api = axios.create({
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json'
-  }
+  },
+  timeout: 30000
 });
+
+// Separate instance for bulk imports with longer timeout
+const bulkApi = axios.create({
+  baseURL: API_BASE_URL,
+  withCredentials: true,
+  timeout: 300000
+});
+
+// Add interceptor to handle responses
+api.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response?.status === 401) {
+      // 401 is expected when not logged in
+      return Promise.reject(error);
+    }
+    return Promise.reject(error);
+  }
+);
 
 // Auth endpoints
 export const authAPI = {
@@ -53,7 +73,7 @@ export const studentsAPI = {
   bulkImport: (file) => {
     const formData = new FormData();
     formData.append('file', file);
-    return api.post('/students/import/bulk', formData, {
+    return bulkApi.post('/students/import/bulk', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
   }

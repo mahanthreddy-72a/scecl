@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
@@ -24,7 +26,8 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
 // CORS
 app.use(cors({
   origin: [process.env.CORS_ORIGIN || 'http://localhost:3000', 'http://localhost:5173'],
-  credentials: true
+  credentials: true,
+  allowedHeaders: ['Content-Type']
 }));
 
 // Session management
@@ -43,16 +46,19 @@ app.use(session({
   }
 }));
 
-// Rate limiting
+// Static files BEFORE rate limiting (images shouldn't be rate limited!)
+const uploadsPath = path.join(__dirname, '..', '..', 'backend', 'uploads');
+console.log('📁 Serving static files from:', uploadsPath);
+console.log('📁 Files in directory:', require('fs').readdirSync(uploadsPath));
+app.use('/uploads', express.static(uploadsPath, { dotfiles: 'allow' }));
+
+// Rate limiting (relaxed for development)
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
+  max: process.env.NODE_ENV === 'production' ? 100 : 10000 // Much higher for development
 });
 
 app.use(limiter);
-
-// Static files
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Routes
 app.use('/api/auth', authRoutes);

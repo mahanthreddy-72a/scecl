@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const pool = require('../db');
 const bcrypt = require('bcrypt');
 
@@ -64,7 +66,15 @@ async function seed() {
       }
     }
 
+    // Re-insert staff/teacher account (should always be present)
+    await client.query(`
+      INSERT INTO students (scs_no, name, class, house, has_voted) VALUES
+      ('SCS0000', 'Staff/Teacher Account', 'Faculty', 'Spartans', false)
+      ON CONFLICT (scs_no) DO NOTHING;
+    `);
+
     console.log('✓ Database seeded successfully');
+    console.log('✓ Staff/Teacher account ensured (SCS0000)');
     process.exit(0);
   } catch (error) {
     console.error('✗ Seeding failed:', error.message);

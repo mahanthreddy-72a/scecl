@@ -55,13 +55,13 @@ export const useAuth = () => {
     try {
       const response = await authAPI.studentLogin(scs_no);
       setStudent(response.data.student);
-      return response.data;
+      setLoading(false);
+      return { success: true, ...response.data };
     } catch (err) {
+      setLoading(false);
       const message = err.response?.data?.error || 'Login failed';
       setError(message);
       throw new Error(message);
-    } finally {
-      setLoading(false);
     }
   }, []);
 

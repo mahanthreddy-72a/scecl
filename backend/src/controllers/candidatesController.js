@@ -42,17 +42,23 @@ exports.createCandidate = async (req, res) => {
       return res.status(400).json({ error: 'Name and position required' });
     }
 
+    const houses = ['Spartans', 'Vikings', 'Knights', 'Samurais'];
     const validPositions = [
       'Head Boy',
       'Head Girl',
+      'Deputy Head Boy',
+      'Deputy Head Girl',
       'Sports Captain',
+      'Sports Vice Captain',
+      'CCA Captain',
+      'CCA Vice Captain',
       'Cultural Secretary',
-      'House Captain',
-      'House Vice Captain'
+      ...houses.map(h => `${h} House Captain`),
+      ...houses.map(h => `${h} House Vice Captain`)
     ];
 
     if (!validPositions.includes(position)) {
-      return res.status(400).json({ error: 'Invalid position' });
+      return res.status(400).json({ error: 'Invalid position: ' + position });
     }
 
     if (house && !['Spartans', 'Vikings', 'Knights', 'Samurais'].includes(house)) {

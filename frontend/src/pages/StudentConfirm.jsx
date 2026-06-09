@@ -19,61 +19,84 @@ export default function StudentConfirm() {
     return null;
   }
 
+  const getHouseColor = (house) => {
+    const colors = {
+      'Spartans': { bg: 'bg-red-600', light: 'bg-red-900/30 border-red-700/50' },
+      'Vikings': { bg: 'bg-blue-600', light: 'bg-blue-900/30 border-blue-700/50' },
+      'Knights': { bg: 'bg-yellow-600', light: 'bg-yellow-900/30 border-yellow-700/50' },
+      'Samurais': { bg: 'bg-purple-600', light: 'bg-purple-900/30 border-purple-700/50' }
+    };
+    return colors[house] || { bg: 'bg-slate-600', light: 'bg-slate-800' };
+  };
+
+  const houseColor = getHouseColor(student.house);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 to-slate-900 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="card space-y-8">
-          {/* Header */}
-          <div className="text-center space-y-2">
-            <h1 className="text-3xl font-bold text-white">Confirm Your Identity</h1>
-            <p className="text-slate-400">Please verify the information below</p>
-          </div>
+      <div className="w-full max-w-2xl">
+        {/* Header */}
+        <div className="text-center mb-8 space-y-2">
+          <h1 className="text-4xl font-bold text-white">Verify Your Identity</h1>
+          <p className="text-slate-400 text-lg">Please confirm your details</p>
+        </div>
 
-          {/* Student Info */}
-          <div className="space-y-4">
-            <div className="bg-slate-800 rounded p-4">
-              <p className="text-slate-400 text-sm mb-1">Name</p>
-              <p className="text-lg font-semibold text-white">{student.name}</p>
+        {/* Profile Card */}
+        <div className={`card border-2 border-slate-700 space-y-8 p-8 bg-gradient-to-b from-slate-800 to-slate-900`}>
+
+          {/* Profile Section */}
+          <div className={`rounded-xl p-8 border-2 ${houseColor.light} space-y-6`}>
+
+            {/* Student Name - Large & Prominent */}
+            <div className="text-center space-y-2">
+              <p className="text-slate-400 text-sm uppercase tracking-widest font-semibold">Your Name</p>
+              <p className="text-4xl font-bold text-white">{student.name}</p>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-slate-800 rounded p-4">
-                <p className="text-slate-400 text-sm mb-1">SCS Number</p>
-                <p className="text-lg font-semibold text-white">{student.scs_no}</p>
+            {/* House Badge */}
+            <div className="flex justify-center">
+              <div className={`${houseColor.bg} text-white px-8 py-3 rounded-full font-bold text-lg tracking-wide shadow-lg`}>
+                🏠 {student.house}
+              </div>
+            </div>
+
+            {/* Details Grid */}
+            <div className="grid grid-cols-2 gap-6 pt-4 border-t border-slate-600/50">
+              {/* SCS Number */}
+              <div className="bg-slate-800/70 rounded-lg p-5 border border-slate-600/50">
+                <p className="text-slate-400 text-xs uppercase tracking-wider font-semibold mb-3">SCS Number</p>
+                <p className="text-2xl font-bold text-blue-400 font-mono">{student.scs_no}</p>
               </div>
 
-              <div className="bg-slate-800 rounded p-4">
-                <p className="text-slate-400 text-sm mb-1">Class</p>
-                <p className="text-lg font-semibold text-white">{student.class}</p>
+              {/* Class */}
+              <div className="bg-slate-800/70 rounded-lg p-5 border border-slate-600/50">
+                <p className="text-slate-400 text-xs uppercase tracking-wider font-semibold mb-3">Class</p>
+                <p className="text-2xl font-bold text-green-400">{student.class}</p>
               </div>
-            </div>
-
-            <div className="bg-slate-800 rounded p-4">
-              <p className="text-slate-400 text-sm mb-1">House</p>
-              <p className="text-lg font-semibold text-white">{student.house}</p>
             </div>
           </div>
 
-          {/* Buttons */}
-          <div className="space-y-3">
+          {/* Action Buttons */}
+          <div className="space-y-3 pt-4">
             <button
               onClick={handleConfirm}
-              className="btn-primary w-full py-3 font-semibold"
+              className="w-full btn-primary py-4 text-lg font-bold hover:scale-105 transition-transform shadow-lg"
             >
-              Confirm & Continue to Ballot
+              ✓ Confirm & Vote
             </button>
 
             <button
               onClick={handleCancel}
-              className="btn-secondary w-full py-3 font-semibold"
+              className="w-full btn-secondary py-3 font-semibold hover:opacity-80 transition"
             >
-              Cancel
+              ← Change SCS Number
             </button>
           </div>
 
-          {/* Footer */}
-          <div className="text-center text-xs text-slate-500">
-            <p>If the information is incorrect, please contact your election officer.</p>
+          {/* Info Message */}
+          <div className="bg-blue-900/20 border border-blue-700/50 rounded-lg p-4">
+            <p className="text-blue-300 text-sm text-center">
+              ℹ️ If the information is incorrect, click "Change SCS Number" to go back and enter again.
+            </p>
           </div>
         </div>
       </div>

@@ -209,22 +209,35 @@ exports.bulkImport = async (req, res) => {
         const scs_no = String(row.scs_no || row.SCS_NO || row.SCS || '').trim();
         const name = String(row.name || row.NAME || '').trim();
         const cls = String(row.class || row.CLASS || row.Class || '').trim();
-        const house = String(row.house || row.HOUSE || row.House || '').trim();
+        let house = String(row.house || row.HOUSE || row.House || '').trim();
 
-        if (!scs_no || !name || !cls || !house) {
+        // Skip only if scs_no or name is missing
+        if (!scs_no || !name) {
           skipped++;
           continue;
         }
 
-        if (!['Spartans', 'Vikings', 'Knights', 'Samurais'].includes(house)) {
-          skipped++;
-          continue;
-        }
+        // Auto-prefix SCS if not present
+        const formattedScsNo = scs_no.startsWith('SCS') ? scs_no : `SCS${scs_no}`;
+
+        // Normalize house name (case-insensitive)
+        const validHouses = {
+          'spartans': 'Spartans',
+          'vikings': 'Vikings',
+          'knights': 'Knights',
+          'samurais': 'Samurais'
+        };
+
+        // If house is not provided or invalid, default to Spartans
+        house = validHouses[house.toLowerCase()] || 'Spartans';
+
+        // Use default class if not provided
+        const defaultClass = cls || '10A';
 
         try {
           await client.query(
             'INSERT INTO students (scs_no, name, class, house) VALUES ($1, $2, $3, $4)',
-            [scs_no, name, cls, house]
+            [formattedScsNo, name, defaultClass, house]
           );
           imported++;
         } catch (error) {
@@ -244,7 +257,7 @@ exports.bulkImport = async (req, res) => {
       client.release();
     }
   } catch (error) {
-    console.error('Import error:', error);
-    res.status(500).json({ error: 'Failed to import students' });
+    console.error('Import error details:', error.message, error.stack);
+    res.status(500).json({ error: error.message || 'Failed to import students' });
   }
 };

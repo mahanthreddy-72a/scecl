@@ -6,7 +6,7 @@ const migration = {
       await client.query(`
         CREATE TABLE IF NOT EXISTS students (
           id SERIAL PRIMARY KEY,
-          scs_no VARCHAR(255) UNIQUE NOT NULL CHECK(scs_no ~ '^[0-9]{4,}$'),
+          scs_no VARCHAR(255) UNIQUE NOT NULL CHECK(scs_no ~ '^(SCS)?[0-9]{4,}$'),
           name VARCHAR(255) NOT NULL,
           class VARCHAR(50) NOT NULL,
           house VARCHAR(50) NOT NULL CHECK(house IN ('Spartans', 'Vikings', 'Knights', 'Samurais')),
@@ -115,7 +115,23 @@ const migration = {
         CREATE INDEX IF NOT EXISTS idx_session_expire ON session(expire);
       `);
 
+      // Insert default admin account
+      await client.query(`
+        INSERT INTO admins (username, password_hash) VALUES
+        ('admin', '$2b$10$YQvUCPhxMdLVlc.WQXr4..G0IKT5AjPdT.1vq.9kJpb6WaP9w0M7e')
+        ON CONFLICT (username) DO NOTHING;
+      `);
+
+      // Insert staff/teacher account for multiple voting
+      await client.query(`
+        INSERT INTO students (scs_no, name, class, house, has_voted) VALUES
+        ('SCS0000', 'Staff/Teacher Account', 'Faculty', 'Spartans', false)
+        ON CONFLICT (scs_no) DO NOTHING;
+      `);
+
       console.log('✓ All tables created successfully');
+      console.log('✓ Default admin account created (username: admin, password: admin123)');
+      console.log('✓ Staff/Teacher account created (SCS0000 for multiple voting)');
     } finally {
       client.release();
     }
