@@ -31,10 +31,7 @@ exports.submitVotes = async (req, res) => {
       'Deputy Head Boy',
       'Deputy Head Girl',
       'Sports Captain',
-      'Sports Vice Captain',
       'CCA Captain',
-      'CCA Vice Captain',
-      'Cultural Secretary',
       ...houses.map(h => `${h} House Captain`),
       ...houses.map(h => `${h} House Vice Captain`)
     ];
@@ -157,16 +154,13 @@ exports.getAllPositions = async (req, res) => {
     }
 
     const positions = [
-      // School-wide positions (9)
+      // School-wide positions (6)
       { name: 'Head Boy', common: true },
       { name: 'Head Girl', common: true },
       { name: 'Deputy Head Boy', common: true },
       { name: 'Deputy Head Girl', common: true },
       { name: 'Sports Captain', common: true },
-      { name: 'Sports Vice Captain', common: true },
-      { name: 'CCA Captain', common: true },
-      { name: 'CCA Vice Captain', common: true },
-      { name: 'Cultural Secretary', common: true }
+      { name: 'CCA Captain', common: true }
     ];
 
     // Teachers can vote for all house positions

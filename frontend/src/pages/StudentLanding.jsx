@@ -31,7 +31,8 @@ export default function StudentLanding() {
       await loginStudent(fullScsNo);
       setLoading(false);
     } catch (err) {
-      setError(err.message);
+      const errorMsg = err?.response?.data?.error || err?.message || 'Login failed. Please try again.';
+      setError(errorMsg);
       setLoading(false);
     }
   };

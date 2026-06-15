@@ -1,0 +1,27 @@
+{
+  "version": 2,
+  "experimentalServices": {
+    "frontend": {
+      "root": "frontend",
+      "mount": "/",
+      "framework": "vite"
+    },
+    "backend": {
+      "root": "api",
+      "routePrefix": "/api",
+      "runtime": "node",
+      "entrypoint": "index.js"
+    }
+  },
+  "headers": [
+    {
+      "source": "/api/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ]
+    }
+  ]
+}

@@ -1,7 +1,9 @@
+import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
 
 // Pages
+import PasswordGate from './pages/PasswordGate';
 import StudentLanding from './pages/StudentLanding';
 import StudentConfirm from './pages/StudentConfirm';
 import StudentBallot from './pages/StudentBallot';
@@ -14,6 +16,13 @@ import AdminResults from './pages/AdminResults';
 
 function App() {
   const { admin, student, loading, isAdminAuth, isStudentAuth } = useAuth();
+  const [gateUnlocked, setGateUnlocked] = useState(false);
+
+  useEffect(() => {
+    // Check if already unlocked in localStorage
+    const unlocked = localStorage.getItem('gateUnlocked') === 'true';
+    setGateUnlocked(unlocked);
+  }, []);
 
   if (loading) {
     return (
@@ -21,6 +30,11 @@ function App() {
         <div className="text-white">Loading...</div>
       </div>
     );
+  }
+
+  // Show password gate if not unlocked
+  if (!gateUnlocked) {
+    return <PasswordGate onUnlock={() => setGateUnlocked(true)} />;
   }
 
   return (
