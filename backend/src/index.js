@@ -19,6 +19,9 @@ const dashboardRoutes = require('./routes/dashboard');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Trust proxy for Render
+app.set('trust proxy', 1);
+
 // Security headers middleware
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -78,17 +81,17 @@ const limiter = rateLimit({
 // Strict rate limiting for voting
 const votingLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 5, // Max 5 attempts per hour
+  max: 50, // Allow more attempts for development
   message: 'Too many voting attempts',
-  skipSuccessfulRequests: false
+  skipSuccessfulRequests: true // Don't count successful votes
 });
 
-// Strict rate limiting for auth
+// Relaxed rate limiting for auth (status checks happen frequently)
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // Max 10 login attempts
+  max: 100, // Allow 100 requests (enough for status checks + logins)
   message: 'Too many login attempts',
-  skipSuccessfulRequests: false
+  skipSuccessfulRequests: true // Don't count successful logins
 });
 
 app.use(limiter);
