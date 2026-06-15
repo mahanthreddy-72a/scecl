@@ -97,7 +97,7 @@ app.use(limiter);
 
 // Routes
 app.use('/api/auth', authLimiter, authRoutes);
-app.use('/api/voting', votingLimiter, votingRoutes);
+app.use('/api/voting', votingRoutes); // No rate limit - DB prevents double voting
 app.use('/api/candidates', candidatesRoutes);
 app.use('/api/students', studentsRoutes);
 app.use('/api/dashboard', dashboardRoutes);
