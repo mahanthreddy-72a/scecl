@@ -8,9 +8,9 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD || 'postgres',
   max: 5,
   min: 1,
-  idleTimeoutMillis: 3000,
-  connectionTimeoutMillis: 2000,
-  statement_timeout: 5000,
+  idleTimeoutMillis: 15000,
+  connectionTimeoutMillis: 5000,
+  statement_timeout: 10000,
   ssl: process.env.DB_SSL !== 'false' ? { rejectUnauthorized: false } : false
 });
 
