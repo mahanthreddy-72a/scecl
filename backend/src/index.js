@@ -106,21 +106,41 @@ app.get('/health', (req, res) => {
 });
 
 // Serve frontend static files
-const frontendPath = path.join(__dirname, '../../frontend/dist');
-console.log('📁 Frontend path:', frontendPath);
 const fs = require('fs');
-if (fs.existsSync(frontendPath)) {
-  console.log('✓ Frontend dist folder exists');
-  console.log('📂 Files:', fs.readdirSync(frontendPath));
-} else {
-  console.log('❌ Frontend dist folder NOT FOUND!');
+
+// Try multiple possible paths for frontend dist
+const possiblePaths = [
+  path.join(__dirname, '../../frontend/dist'),
+  path.join(__dirname, '../../../frontend/dist'),
+  path.join(process.cwd(), 'frontend/dist'),
+  '/opt/render/project/src/frontend/dist' // Render default
+];
+
+let frontendPath = null;
+for (const p of possiblePaths) {
+  if (fs.existsSync(p)) {
+    frontendPath = p;
+    console.log('✓ Found frontend at:', p);
+    break;
+  }
 }
+
+if (!frontendPath) {
+  console.log('⚠️ Frontend dist not found in:', possiblePaths);
+  frontendPath = possiblePaths[0]; // Use first as fallback
+}
+
+console.log('📁 Using frontend path:', frontendPath);
+console.log('📂 Files in dist:', fs.existsSync(frontendPath) ? fs.readdirSync(frontendPath) : 'FOLDER NOT FOUND');
+
 app.use(express.static(frontendPath));
 
 // SPA fallback - serve index.html for all non-API routes
 app.get('*', (req, res) => {
   const indexPath = path.join(frontendPath, 'index.html');
-  console.log('📄 Serving index.html from:', indexPath);
+  if (!fs.existsSync(indexPath)) {
+    return res.status(404).json({ error: 'Frontend not built. Check deployment logs.' });
+  }
   res.sendFile(indexPath);
 });
 
