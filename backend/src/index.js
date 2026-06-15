@@ -3,7 +3,6 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
-const pgSession = require('connect-pg-simple')(session);
 const rateLimit = require('express-rate-limit');
 const path = require('path');
 const pool = require('./db');
@@ -47,19 +46,15 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE']
 }));
 
-// Session management
+// Session management (in-memory store - no DB connections wasted!)
 app.use(session({
-  store: new pgSession({
-    pool: pool,
-    tableName: 'session'
-  }),
   secret: process.env.SESSION_SECRET || 'your-secret-key-change-in-production',
   resave: false,
   saveUninitialized: false,
   cookie: {
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
-    maxAge: 6 * 60 * 60 * 1000 // 6 hours (reduced from 24)
+    maxAge: 2 * 60 * 60 * 1000 // 2 hours
   }
 }));
 
@@ -78,20 +73,24 @@ const limiter = rateLimit({
   legacyHeaders: false
 });
 
+// DISABLE rate limiting for status checks (they happen on every page load)
+const noRateLimit = (req, res, next) => next();
+
 // Strict rate limiting for voting
 const votingLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 50, // Allow more attempts for development
+  max: 3, // Max 3 vote attempts per hour
   message: 'Too many voting attempts',
-  skipSuccessfulRequests: true // Don't count successful votes
+  skipSuccessfulRequests: false
 });
 
-// Relaxed rate limiting for auth (status checks happen frequently)
+// Strict rate limiting for login only
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Allow 100 requests (enough for status checks + logins)
+  max: 5, // Max 5 login attempts
   message: 'Too many login attempts',
-  skipSuccessfulRequests: true // Don't count successful logins
+  skipSuccessfulRequests: false,
+  skip: (req) => req.path === '/student/status' || req.path === '/admin/status' // Skip status checks
 });
 
 app.use(limiter);
