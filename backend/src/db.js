@@ -6,11 +6,11 @@ const pool = new Pool({
   database: process.env.DB_NAME || 'elections',
   user: process.env.DB_USER || 'postgres',
   password: process.env.DB_PASSWORD || 'postgres',
-  max: 12,
-  min: 2,
-  idleTimeoutMillis: 20000,
-  connectionTimeoutMillis: 5000,
-  statement_timeout: 10000,
+  max: 20,
+  min: 3,
+  idleTimeoutMillis: 10000,
+  connectionTimeoutMillis: 3000,
+  statement_timeout: 5000,
   ssl: process.env.DB_SSL !== 'false' ? { rejectUnauthorized: false } : false
 });
 
