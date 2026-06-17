@@ -299,7 +299,7 @@ export default function StudentBallot() {
                 </div>
 
                 {positions.filter(p => !p.common === false).map((position, idx) => (
-            <div key={position.name} className="card border border-slate-700/50 shadow-xl animate-fadeInScale hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 px-8 py-10 min-h-[330px]">
+            <div key={position.name} className="card border border-slate-700/50 shadow-xl animate-fadeInScale hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 px-8 py-8 max-w-4xl mx-auto">
               {/* Position Header */}
               <div className="flex items-center gap-3 mb-8 pb-4 border-b border-slate-700/30">
                 <span className="flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full text-white font-bold text-sm">
@@ -309,11 +309,11 @@ export default function StudentBallot() {
               </div>
 
               {/* Candidates Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 justify-center max-w-2xl mx-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-3xl mx-auto">
                 {(candidates[position.name] || []).map(candidate => (
                   <label
                     key={candidate.id}
-                    className={`flex flex-col items-center p-4 rounded-xl border-3 cursor-pointer transition-all duration-200 transform hover:scale-105 ${
+                    className={`flex flex-col items-center p-5 rounded-xl border-3 cursor-pointer transition-all duration-200 transform hover:scale-105 ${
                       votes[position.name] === String(candidate.id)
                         ? 'border-blue-500 bg-gradient-to-b from-blue-900/40 to-blue-800/20 shadow-lg shadow-blue-500/20'
                         : 'border-slate-600 hover:border-blue-400 hover:shadow-lg hover:shadow-blue-500/10'
@@ -325,7 +325,7 @@ export default function StudentBallot() {
                         <img
                           src={candidate.image_path}
                           alt={candidate.name}
-                          className="w-full h-40 object-cover rounded-lg shadow-md"
+                          className="w-full h-48 object-cover rounded-lg shadow-md"
                           onError={(e) => {
                             console.error('Image failed to load:', candidate.image_path);
                             e.target.style.display = 'none';
@@ -423,7 +423,7 @@ export default function StudentBallot() {
                   const displayHouse = student?.isTeacher ? selectedTeacherHouse : student?.house;
                   const housePositions = positions.filter(p => !p.common && p.house === displayHouse);
                   return housePositions.map((position, idx) => (
-                    <div key={position.name} className="card border border-slate-700/50 shadow-xl animate-fadeInScale hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 px-8 py-10 min-h-[330px]">
+                    <div key={position.name} className="card border border-slate-700/50 shadow-xl animate-fadeInScale hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 px-8 py-8 max-w-4xl mx-auto">
                       {/* Position Header */}
                       <div className="flex items-center gap-3 mb-8 pb-4 border-b border-slate-700/30">
                         <span className="flex items-center justify-center w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full text-white font-bold text-sm">
@@ -433,11 +433,11 @@ export default function StudentBallot() {
                       </div>
 
                       {/* Candidates Grid */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 justify-center max-w-2xl mx-auto">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-3xl mx-auto">
                         {(candidates[position.name] || []).map(candidate => (
                           <label
                             key={candidate.id}
-                            className={`flex flex-col items-center p-4 rounded-xl border-3 cursor-pointer transition-all duration-200 transform hover:scale-105 ${
+                            className={`flex flex-col items-center p-5 rounded-xl border-3 cursor-pointer transition-all duration-200 transform hover:scale-105 ${
                               votes[position.name] === String(candidate.id)
                                 ? 'border-purple-500 bg-gradient-to-b from-purple-900/40 to-purple-800/20 shadow-lg shadow-purple-500/20'
                                 : 'border-slate-600 hover:border-purple-400 hover:shadow-lg hover:shadow-purple-500/10'
@@ -449,7 +449,7 @@ export default function StudentBallot() {
                                 <img
                                   src={candidate.image_path}
                                   alt={candidate.name}
-                                  className="w-full h-40 object-cover rounded-lg shadow-md"
+                                  className="w-full h-48 object-cover rounded-lg shadow-md"
                                   onError={(e) => {
                                     console.error('Image failed to load:', candidate.image_path);
                                     e.target.style.display = 'none';
