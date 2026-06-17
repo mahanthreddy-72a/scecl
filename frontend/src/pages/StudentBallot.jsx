@@ -299,7 +299,7 @@ export default function StudentBallot() {
                 </div>
 
                 {positions.filter(p => !p.common === false).map((position, idx) => (
-            <div key={position.name} className="card border border-slate-700/50 shadow-xl animate-fadeInScale hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300">
+            <div key={position.name} className="card border border-slate-700/50 shadow-xl animate-fadeInScale hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 px-8 py-10 min-h-[330px]">
               {/* Position Header */}
               <div className="flex items-center gap-3 mb-8 pb-4 border-b border-slate-700/30">
                 <span className="flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full text-white font-bold text-sm">
@@ -309,7 +309,7 @@ export default function StudentBallot() {
               </div>
 
               {/* Candidates Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 justify-center max-w-2xl mx-auto">
                 {(candidates[position.name] || []).map(candidate => (
                   <label
                     key={candidate.id}
@@ -423,7 +423,7 @@ export default function StudentBallot() {
                   const displayHouse = student?.isTeacher ? selectedTeacherHouse : student?.house;
                   const housePositions = positions.filter(p => !p.common && p.house === displayHouse);
                   return housePositions.map((position, idx) => (
-                    <div key={position.name} className="card border border-slate-700/50 shadow-xl animate-fadeInScale hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300">
+                    <div key={position.name} className="card border border-slate-700/50 shadow-xl animate-fadeInScale hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 px-8 py-10 min-h-[330px]">
                       {/* Position Header */}
                       <div className="flex items-center gap-3 mb-8 pb-4 border-b border-slate-700/30">
                         <span className="flex items-center justify-center w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full text-white font-bold text-sm">
@@ -433,7 +433,7 @@ export default function StudentBallot() {
                       </div>
 
                       {/* Candidates Grid */}
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 justify-center max-w-2xl mx-auto">
                         {(candidates[position.name] || []).map(candidate => (
                           <label
                             key={candidate.id}
