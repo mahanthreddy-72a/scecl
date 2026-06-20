@@ -3,6 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
+const pgSession = require('connect-pg-simple')(session);
 const rateLimit = require('express-rate-limit');
 const path = require('path');
 const pool = require('./db');
@@ -48,13 +49,20 @@ app.use(cors({
 
 // Session management (in-memory store - no DB connections wasted!)
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'your-secret-key-change-in-production',
+  store: new pgSession({
+    pool: pool,
+    tableName: 'session',
+    createTableIfMissing: true
+  }),
+  secret: process.env.SESSION_SECRET || 'change-this-secret',
   resave: false,
   saveUninitialized: false,
+  rolling: true,
   cookie: {
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
-    maxAge: 2 * 60 * 60 * 1000 // 2 hours
+    sameSite: 'lax',
+    maxAge: 2 * 60 * 60 * 1000
   }
 }));
 
@@ -66,8 +74,8 @@ app.use('/uploads', express.static(uploadsPath, { dotfiles: 'allow' }));
 
 // General rate limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: process.env.NODE_ENV === 'production' ? 100 : 10000,
+  windowMs: 15 * 60 * 1000,
+  max: 5000,
   message: 'Too many requests from this IP',
   standardHeaders: true,
   legacyHeaders: false
@@ -86,11 +94,11 @@ const votingLimiter = rateLimit({
 
 // Strict rate limiting for login only
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // Max 5 login attempts
-  message: 'Too many login attempts',
-  skipSuccessfulRequests: false,
-  skip: (req) => req.path === '/student/status' || req.path === '/admin/status' // Skip status checks
+  windowMs: 15 * 60 * 1000,
+  max: 300,
+  message: 'Too many login attempts. Please wait and try again.',
+  skipSuccessfulRequests: true,
+  skip: (req) => req.path === '/student/status' || req.path === '/admin/status'
 });
 
 app.use(limiter);
